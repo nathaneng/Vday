@@ -70,9 +70,20 @@
     #yesBtn { left: 10%; top: 35%; background: var(--yes); color: #fff; z-index: 100; }
     #noBtn { right: 10%; top: 35%; background: #eee; color: #444; z-index: 50; }
 
+    #noWarning {
+      position: absolute;
+      width: 100%;
+      bottom: -30px;
+      left: 0;
+      font-size: 14px;
+      color: #ff3b7a;
+      font-weight: bold;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
     .result { display: none; animation: pop 0.5s ease forwards; }
     
-    /* FIX: Added background and padding to subText so it's never blocked */
     #subText { 
       font-size: 1.1rem; 
       color: #ff3b7a; 
@@ -80,7 +91,7 @@
       margin: 15px 0; 
       min-height: 3.5em;
       position: relative;
-      z-index: 20; /* Keep text above floating hearts */
+      z-index: 20; 
       background: rgba(255, 255, 255, 0.4);
       border-radius: 15px;
       padding: 10px;
@@ -100,13 +111,19 @@
 
     .calendar { font-weight: 900; color: var(--yes); font-size: 1.5rem; display: block; margin-top: 5px; }
 
-    /* FIX: Moved hug hearts to the top 15% so they don't cover the middle text */
+    .shiba-gif { 
+      width: 100%; 
+      max-width: 220px; 
+      border-radius: 15px; 
+      margin-top: 15px; 
+    }
+
     .hug-heart {
       position: fixed; 
       top: 15%; 
       font-size: 45px; 
       opacity: 0; 
-      z-index: 5; /* Lower z-index than the card text */
+      z-index: 5; 
       transition: all 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
@@ -140,13 +157,14 @@
       <svg class="art" viewBox="0 0 320 240">
         <path d="M250 50 C250 33 270 25 282 38 C294 25 314 33 314 50 C314 78 282 92 282 106 C282 92 250 78 250 50Z" fill="#ff1f68"/>
         <path d="M90 120 C90 70 140 40 190 60 C240 40 290 70 290 120 C290 180 240 210 190 210 C140 210 90 180 90 120Z" fill="#f2a97b"/>
-        <circle cx="160" cy="130" r="8"/><circle cx="220" cy="130" r="8"/>
+        <circle cx="160" cy="130" r="8" fill="#333"/><circle cx="220" cy="130" r="8" fill="#333"/>
         <path d="M190 144 C186 144 182 148 182 152 C182 160 190 164 190 170 C190 164 198 160 198 152 C198 148 194 144 190 144Z" fill="#ff7aa2"/>
       </svg>
       <h1>Emma, will you be my valentine?</h1>
       <div class="button-zone" id="zone">
         <button id="yesBtn">Yes</button>
         <button id="noBtn">No</button>
+        <div id="noWarning">Hey! Why are you trying so hard? 😂</div>
       </div>
     </div>
 
@@ -157,7 +175,7 @@
         <span>Counting down until we meet:</span>
         <strong class="calendar">APRIL 13 🗓️❤️</strong>
       </div>
-      <img style="width:100%;max-width:180px;border-radius:12px;margin-top:15px;" src="https://static.boredpanda.com/blog/wp-content/uploads/2018/05/funny-shiba-inu-26-5ae9b4c97986a__700.gif" alt="Celebration">
+      <img class="shiba-gif" src="https://static.boredpanda.com/blog/wp-content/uploads/2018/05/funny-shiba-inu-26-5ae9b4c97986a__700.gif" alt="Happy Shiba">
     </div>
   </main>
 
@@ -167,18 +185,37 @@
     const vibe = document.getElementById('vibe');
     const zone = document.getElementById('zone');
     const subText = document.getElementById('subText');
+    const noWarning = document.getElementById('noWarning');
     const saveDateDiv = document.getElementById('saveTheDate');
+    
     let yesScale = 1;
+    let noAttempts = 0;
+
+    const noMessages = [
+        "Nice try! 😂",
+        "Really? Still trying? 🙄",
+        "Just click Yes already! ❤️",
+        "Persistence won't work here! 😜"
+    ];
 
     function moveNo() {
+      noAttempts++;
       const bZone = zone.getBoundingClientRect();
       const bNo = noBtn.getBoundingClientRect();
       const newX = Math.random() * (bZone.width - bNo.width);
       const newY = Math.random() * (bZone.height - bNo.height);
+      
       noBtn.style.left = `${newX}px`;
       noBtn.style.top = `${newY}px`;
+      
       yesScale += 0.2;
       yesBtn.style.transform = `scale(${yesScale})`;
+
+      if (noAttempts >= 2) {
+        noWarning.style.opacity = "1";
+        // Cycle through funny messages
+        noWarning.innerText = noMessages[Math.min(noAttempts - 2, noMessages.length - 1)];
+      }
     }
 
     noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveNo(); });
@@ -198,7 +235,6 @@
       
       confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
 
-      // Visual Hug: Hearts moved to avoid blocking text
       const h1 = document.createElement("div"); h1.innerHTML = "❤️"; h1.className = "hug-heart"; h1.style.left = "0";
       const h2 = document.createElement("div"); h2.innerHTML = "❤️"; h2.className = "hug-heart"; h2.style.right = "0";
       document.body.appendChild(h1); document.body.appendChild(h2);
