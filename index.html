@@ -21,7 +21,7 @@
 
     body {
       margin: 0;
-      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+      padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom) 20px;
       min-height: 100svh;
       display: flex;
       align-items: center;
@@ -29,21 +29,13 @@
       background: radial-gradient(circle at top, var(--bg2), var(--bg1));
       font-family: -apple-system, system-ui, sans-serif;
       overflow: hidden;
-    }
-
-    #confettiCanvas {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 9999;
+      touch-action: none;
     }
 
     .card {
-      width: 90%;
-      max-width: 400px;
-      padding: 30px 20px;
+      width: 100%;
+      max-width: 380px;
+      padding: 25px;
       background: var(--card);
       backdrop-filter: blur(15px);
       -webkit-backdrop-filter: blur(15px);
@@ -51,66 +43,75 @@
       text-align: center;
       box-shadow: 0 20px 50px rgba(0,0,0,0.1);
       z-index: 10;
-      transition: all 0.5s ease;
+      position: relative;
     }
 
-    .art { width: 160px; height: auto; margin: 0 auto 10px; display: block; }
-    h1 { font-size: 1.6rem; margin: 10px 0 20px; color: #333; line-height: 1.2; }
+    .art { width: 130px; height: auto; margin: 0 auto 10px; display: block; }
+    h1 { font-size: 1.5rem; margin: 10px 0 20px; color: #333; line-height: 1.2; }
 
-    /* The Interactive Button Zone */
     .button-zone {
       position: relative;
       width: 100%;
-      height: 180px;
+      height: 170px;
       margin: 0 auto;
-      touch-action: none; /* Prevents scrolling while chasing button */
     }
 
     button {
       position: absolute;
-      padding: 16px 30px;
+      padding: 16px 28px;
       font-size: 18px;
       font-weight: 800;
       border-radius: 50px;
       border: none;
-      cursor: pointer;
       box-shadow: 0 8px 20px rgba(0,0,0,0.1);
       transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), left 0.3s ease-out, top 0.3s ease-out;
     }
 
-    #yesBtn { left: 10%; top: 30%; background: var(--yes); color: #fff; z-index: 100; }
-    #noBtn { right: 10%; top: 30%; background: #eee; color: #444; z-index: 50; }
+    #yesBtn { left: 10%; top: 35%; background: var(--yes); color: #fff; z-index: 100; }
+    #noBtn { right: 10%; top: 35%; background: #eee; color: #444; z-index: 50; }
 
-    /* Success Section */
-    .result { display: none; animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-    #subText { font-size: 1.1rem; color: #ff3b7a; font-weight: 600; margin: 15px 0; min-height: 3.5em; line-height: 1.4; }
+    .result { display: none; animation: pop 0.5s ease forwards; }
     
-    .distance-badge {
-      display: inline-block;
-      background: rgba(255, 59, 122, 0.1);
-      padding: 4px 12px;
-      border-radius: 20px;
-      text-decoration: line-through;
-      color: #ff3b7a;
-      font-size: 0.8rem;
-      margin-top: 8px;
+    /* FIX: Added background and padding to subText so it's never blocked */
+    #subText { 
+      font-size: 1.1rem; 
+      color: #ff3b7a; 
+      font-weight: 600; 
+      margin: 15px 0; 
+      min-height: 3.5em;
+      position: relative;
+      z-index: 20; /* Keep text above floating hearts */
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 15px;
+      padding: 10px;
     }
-
+    
     #saveTheDate {
       display: none;
-      margin-top: 20px;
+      margin-top: 15px;
       padding: 15px;
       background: white;
       border-radius: 20px;
       border: 2px dashed var(--yes);
       animation: pop 0.6s ease;
+      position: relative;
+      z-index: 20;
     }
 
     .calendar { font-weight: 900; color: var(--yes); font-size: 1.5rem; display: block; margin-top: 5px; }
-    .fireworks { width: 100%; max-width: 220px; border-radius: 15px; margin-top: 15px; }
+
+    /* FIX: Moved hug hearts to the top 15% so they don't cover the middle text */
+    .hug-heart {
+      position: fixed; 
+      top: 15%; 
+      font-size: 45px; 
+      opacity: 0; 
+      z-index: 5; /* Lower z-index than the card text */
+      transition: all 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
 
     #musicToggle {
-      position: fixed; top: env(safe-area-inset-top, 20px); right: 20px;
+      position: fixed; top: 20px; right: 20px;
       background: #fff; width: 44px; height: 44px; border-radius: 50%;
       display: none; align-items: center; justify-content: center;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 10001; font-size: 20px;
@@ -118,37 +119,28 @@
 
     @keyframes pop { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-    /* Visual Hug Hearts */
-    .hug-heart {
-      position: fixed; top: 25%; font-size: 50px; opacity: 0; z-index: 1000;
-      transition: all 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
     .heart-particle {
-      position: fixed; font-size: 20px; animation: floatUp 4s ease-in forwards; z-index: 1;
+      position: fixed; font-size: 20px; animation: floatUp 4s linear forwards; z-index: 1;
     }
     @keyframes floatUp {
-      0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+      0% { transform: translateY(105vh); opacity: 1; }
+      100% { transform: translateY(-10vh); opacity: 0; }
     }
   </style>
 </head>
 
 <body>
-  <canvas id="confettiCanvas"></canvas>
+  <canvas id="confettiCanvas" style="position:fixed; inset:0; pointer-events:none; z-index:9999;"></canvas>
   <div id="musicToggle" onclick="toggleMusic()">🎵</div>
+  
   <audio id="vibe" src="our-song.m4a" loop></audio>
 
   <main class="card">
     <div id="setup">
       <svg class="art" viewBox="0 0 320 240">
-        <defs>
-          <linearGradient id="fur" x1="0" x2="1"><stop offset="0" stop-color="#f7c7a1"/><stop offset="1" stop-color="#f2a97b"/></linearGradient>
-          <linearGradient id="heartGrad" x1="0" x2="1"><stop offset="0" stop-color="#ff4d7d"/><stop offset="1" stop-color="#ff1f68"/></linearGradient>
-        </defs>
-        <path d="M250 50 C250 33 270 25 282 38 C294 25 314 33 314 50 C314 78 282 92 282 106 C282 92 250 78 250 50Z" fill="url(#heartGrad)"/>
-        <path d="M90 120 C90 70 140 40 190 60 C240 40 290 70 290 120 C290 180 240 210 190 210 C140 210 90 180 90 120Z" fill="url(#fur)"/>
-        <circle cx="160" cy="130" r="8" fill="#333"/><circle cx="220" cy="130" r="8" fill="#333"/>
+        <path d="M250 50 C250 33 270 25 282 38 C294 25 314 33 314 50 C314 78 282 92 282 106 C282 92 250 78 250 50Z" fill="#ff1f68"/>
+        <path d="M90 120 C90 70 140 40 190 60 C240 40 290 70 290 120 C290 180 240 210 190 210 C140 210 90 180 90 120Z" fill="#f2a97b"/>
+        <circle cx="160" cy="130" r="8"/><circle cx="220" cy="130" r="8"/>
         <path d="M190 144 C186 144 182 148 182 152 C182 160 190 164 190 170 C190 164 198 160 198 152 C198 148 194 144 190 144Z" fill="#ff7aa2"/>
       </svg>
       <h1>Emma, will you be my valentine?</h1>
@@ -156,45 +148,36 @@
         <button id="yesBtn">Yes</button>
         <button id="noBtn">No</button>
       </div>
-      <p style="font-size: 13px; color: #888; margin-top: 15px;">(You can't say no, I made sure of it! 😉)</p>
     </div>
 
     <div class="result" id="result">
       <h2>YAY! 🎉</h2>
       <p id="subText"></p>
-      
       <div id="saveTheDate">
-        <span>Counting down until April...</span>
-        <span class="calendar">APRIL 13 🗓️❤️</span>
+        <span>Counting down until we meet:</span>
+        <strong class="calendar">APRIL 13 🗓️❤️</strong>
       </div>
-
-      <img class="fireworks" src="https://static.boredpanda.com/blog/wp-content/uploads/2018/05/funny-shiba-inu-26-5ae9b4c97986a__700.gif" alt="Celebration">
+      <img style="width:100%;max-width:180px;border-radius:12px;margin-top:15px;" src="https://static.boredpanda.com/blog/wp-content/uploads/2018/05/funny-shiba-inu-26-5ae9b4c97986a__700.gif" alt="Celebration">
     </div>
   </main>
 
   <script>
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
-    const zone = document.getElementById('zone');
     const vibe = document.getElementById('vibe');
+    const zone = document.getElementById('zone');
     const subText = document.getElementById('subText');
     const saveDateDiv = document.getElementById('saveTheDate');
     let yesScale = 1;
 
-    // Runaway Button Logic
     function moveNo() {
       const bZone = zone.getBoundingClientRect();
       const bNo = noBtn.getBoundingClientRect();
-      
-      // Random position within the zone
       const newX = Math.random() * (bZone.width - bNo.width);
       const newY = Math.random() * (bZone.height - bNo.height);
-      
-      noBtn.style.left = newX + 'px';
-      noBtn.style.top = newY + 'px';
-      
-      // Grow the Yes button to make it even easier to click
-      yesScale += 0.15;
+      noBtn.style.left = `${newX}px`;
+      noBtn.style.top = `${newY}px`;
+      yesScale += 0.2;
       yesBtn.style.transform = `scale(${yesScale})`;
     }
 
@@ -202,36 +185,33 @@
     noBtn.addEventListener('mouseover', moveNo);
 
     function toggleMusic() {
-      if (vibe.paused) { vibe.play(); } else { vibe.pause(); }
+      if (vibe.paused) vibe.play(); else vibe.pause();
     }
 
-    // "Yes" Click Celebration Sequence
     yesBtn.addEventListener('click', () => {
       document.getElementById('setup').style.display = 'none';
       document.getElementById('result').style.display = 'block';
       document.getElementById('musicToggle').style.display = 'flex';
       
-      vibe.volume = 0.4;
+      vibe.volume = 0.5;
       vibe.play();
       
-      // Initial Big Confetti
       confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
 
-      // LDR Hug Animation: Hearts meeting in middle
+      // Visual Hug: Hearts moved to avoid blocking text
       const h1 = document.createElement("div"); h1.innerHTML = "❤️"; h1.className = "hug-heart"; h1.style.left = "0";
       const h2 = document.createElement("div"); h2.innerHTML = "❤️"; h2.className = "hug-heart"; h2.style.right = "0";
       document.body.appendChild(h1); document.body.appendChild(h2);
       
       setTimeout(() => {
-        h1.style.left = "50%"; h1.style.transform = "translateX(-110%)"; h1.style.opacity = "1";
-        h2.style.right = "50%"; h2.style.transform = "translateX(110%)"; h2.style.opacity = "1";
+        h1.style.left = "50%"; h1.style.transform = "translateX(-120%)"; h1.style.opacity = "1";
+        h2.style.right = "50%"; h2.style.transform = "translateX(120%)"; h2.style.opacity = "1";
       }, 100);
 
-      // LDR Sequence Messages
       const messages = [
         "I knew you'd say yes! 😉",
-        "Distance is just a test to see how far love can travel.",
-        "You're worth every single mile, Emma.",
+        "Distance is just a test of how far love can travel.",
+        "Worth every single mile, Emma.",
         "Across every mile, you are my Valentine! ✈️❤️"
       ];
 
@@ -239,17 +219,13 @@
       const interval = setInterval(() => {
         if (i < messages.length) {
           subText.innerHTML = messages[i];
-          // Little confetti bursts for each message
-          confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
           i++;
         } else {
           clearInterval(interval);
-          subText.innerHTML += `<br><span class="distance-badge">Distance is only temporary</span>`;
           saveDateDiv.style.display = "block";
         }
       }, 2600);
 
-      // Continuous Floating Hearts Background
       setInterval(() => {
         const heart = document.createElement("div");
         heart.innerHTML = "❤️";
@@ -257,7 +233,7 @@
         heart.style.left = Math.random() * 100 + "vw";
         document.body.appendChild(heart);
         setTimeout(() => heart.remove(), 4000);
-      }, 400);
+      }, 500);
     });
   </script>
 </body>
